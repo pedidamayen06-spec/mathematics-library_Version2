@@ -1,0 +1,8 @@
+# Exclude unnecessary files for Docker build
+.git
+node_modules
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
