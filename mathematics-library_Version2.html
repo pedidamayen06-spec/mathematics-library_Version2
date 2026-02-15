@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathematics Library - Educational Resource</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #001a4d;
+            --secondary: #e8f0f7;
+            --accent: #0052cc;
+            --text-dark: #1a1a1a;
+            --text-light: #666666;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 15px rgba(0, 26, 77, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #0a0e27;
+            --secondary: #1a2a4a;
+            --accent: #4d94ff;
+            --text-dark: #e8e8e8;
+            --text-light: #b0b0b0;
+            --card-bg: #16213e;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        html, body {
+            height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-dark);
+            transition: var(--transition);
+            background: linear-gradient(135deg, var(--secondary) 0%, #ffffff 100%);
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+
+        /* Watermark Background */
+        body::before {
+            content: '∫ ∂ ∑ √ π ∞ ≈ ± × ÷ ∆ ∇ ∏';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 180px;
+            font-weight: 700;
+            opacity: 0.03;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            width: 200%;
+        }
+
+        /* Container Layout */
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            min-height: fit-content;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(20px); }
+        }
+
+        .header-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        /* Navigation */
+        nav {
+            flex-shrink: 0;
+            background: var(--card-bg);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+            overflow-x: auto;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        nav button:hover {
+            color: var(--accent);
+            background: rgba(0, 82, 204, 0.1);
+            transform: translateY(-2px);
+        }
+
+        nav button.active {
+            color: white;
+            background: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1.5rem;
+            background: var(--accent);
+            border: none;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(20deg);
+            background: var(--primary);
+        }
+
+        /* Main Content - SCROLLABLE */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 2rem;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            scroll-behavior: smooth;
+        }
+
+        main::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        main::-webkit-scrollbar-track {
+            background: rgba(0, 26, 77, 0.05);
+            border-radius: 10px;
+        }
+
+        main::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        main::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1400px;
+            animation: fadeIn 0.5s ease-in-out;
+            padding-bottom: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+
+        .tab-content.active {
+            display: contents;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.8rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--accent);
+            cursor: default;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 26, 77, 0.15);
+        }
+
+        .card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        [data-theme="dark"] .card-title {
+            color: var(--accent);
+        }
+
+        .card-icon {
+            font-size: 1.4rem;
+        }
+
+        .card-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .formula {
+            background: rgba(0, 82, 204, 0.08);
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+            color: var(--primary);
+            border-left: 3px solid var(--accent);
+            font-size: 0.95rem;
+        }
+
+        [data-theme="dark"] .formula {
+            background: rgba(77, 148, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .example {
+            background: rgba(76, 175, 80, 0.08);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
+            border-left: 3px solid #4CAF50;
+            color: var(--text-dark);
+        }
+
+        [data-theme="dark"] .example {
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .example strong {
+            color: #4CAF50;
+        }
+
+        .svg-container {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1rem 0;
+            background: rgba(0, 26, 77, 0.03);
+            border-radius: 6px;
+            padding: 1rem 0;
+        }
+
+        [data-theme="dark"] .svg-container {
+            background: rgba(77, 148, 255, 0.05);
+        }
+
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+            stroke: var(--text-dark);
+        }
+
+        [data-theme="dark"] svg {
+            stroke: var(--text-light);
+        }
+
+        /* Footer */
+        footer {
+            flex-shrink: 0;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            box-shadow: 0 -4px 15px rgba(0, 26, 77, 0.2);
+        }
+
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .subtitle {
+                font-size: 0.75rem;
+            }
+
+            nav {
+                padding: 0.6rem 0.8rem;
+                gap: 0.5rem;
+            }
+
+            nav button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1.2rem;
+            }
+
+            .card-title {
+                font-size: 1rem;
+            }
+
+            .theme-toggle {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            header {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.1rem;
+            }
+
+            .subtitle {
+                font-size: 0.7rem;
+            }
+
+            nav button {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .formula {
+                font-size: 0.8rem;
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <h1>📚 Mathematics Library</h1>
+                <p class="subtitle">Your Digital Resource for Calculus, Algebra, and Geometry</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav>
+            <button class="nav-btn active" data-tab="home">Home</button>
+            <button class="nav-btn" data-tab="calculus">Calculus</button>
+            <button class="nav-btn" data-tab="algebra">Algebra</button>
+            <button class="nav-btn" data-tab="geometry">Geometry</button>
+            <button class="nav-btn" data-tab="about">About</button>
+        </nav>
+
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">🌙</button>
+
+        <!-- Main Content -->
+        <main>
+            <!-- HOME TAB -->
+            <div class="tab-content active" id="home">
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-title">📖 Welcome</div>
+                        <div class="card-content">
+                            Mathematics Library is your comprehensive digital resource for understanding fundamental mathematical concepts across three major disciplines.
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🎯 Learning Path</div>
+                        <div class="card-content">
+                            Start with Calculus to understand rates of change, explore Algebra for solving equations, and master Geometry for spatial reasoning.
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">✨ Features</div>
+                        <div class="card-content">
+                            Clear definitions, formulas, practical examples, visual diagrams, and real-world applications for every topic.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CALCULUS TAB -->
+            <div class="tab-content" id="calculus">
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-title">📐 Calculus Overview</div>
+                        <div class="card-content">
+                            <strong>Definition:</strong> Calculus is the branch of mathematics concerned with continuous change. It provides tools to model real-world phenomena such as motion, growth, and accumulation.
+                        </div>
+                        <div class="card-content">
+                            <strong>Branches:</strong>
+                            <br/>• <strong>Differential Calculus:</strong> Focuses on rate of change (slopes)
+                            <br/>• <strong>Integral Calculus:</strong> Focuses on accumulation (areas, volumes)
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🔍 Limits & Continuity</div>
+                        <div class="card-content">
+                            Limits describe how a function behaves as it approaches a certain point.
+                        </div>
+                        <div class="formula">lim<sub>x→0</sub> (sin x / x) = 1</div>
+                        <div class="example">
+                            <strong>Lesson:</strong> Limits form the foundation of derivatives and integrals. They help us understand instantaneous behavior at specific points.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🎢 Derivatives</div>
+                        <div class="card-content">
+                            Derivatives measure the instantaneous rate of change of a function at any point.
+                        </div>
+                        <div class="formula">f'(x) = lim<sub>h→0</sub> [f(x+h)-f(x)]/h</div>
+                        <div class="example">
+                            <strong>Example:</strong> If s(t) = t², then velocity v(t) = ds/dt = 2t
+                            <br/><strong>Application:</strong> Motion analysis in physics
+                        </div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="30" y1="150" x2="280" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <line x1="30" y1="30" x2="30" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <path d="M 30 150 Q 60 120 90 80 T 150 30" stroke="#0052cc" stroke-width="2.5" fill="none"/>
+                                <circle cx="90" cy="80" r="4" fill="#ff6b6b"/>
+                                <line x1="60" y1="110" x2="120" y2="50" stroke="#4CAF50" stroke-width="2" stroke-dasharray="5,5"/>
+                                <text x="270" y="165" font-size="12" fill="currentColor">x</text>
+                                <text x="15" y="35" font-size="12" fill="currentColor">y</text>
+                                <text x="90" y="95" font-size="11" fill="#ff6b6b">Point</text>
+                                <text x="65" y="30" font-size="11" fill="#4CAF50">Tangent</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">⚙️ Optimization</div>
+                        <div class="card-content">
+                            Using derivatives to find maximum and minimum values in practical problems.
+                        </div>
+                        <div class="example">
+                            <strong>Example:</strong> Maximize area of a rectangle with fixed perimeter P = 20
+                            <br/><strong>Solution:</strong> A = xy where 2(x+y) = 20 → y = 10-x → A(x) = x(10-x) → dA/dx = 10-2x = 0 → x = 5, y = 5 (Square)
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">∫ Integrals</div>
+                        <div class="card-content">
+                            Integrals represent the total accumulation of a quantity and reverse the process of differentiation.
+                        </div>
+                        <div class="formula">∫ f(x) dx = F(x) + C</div>
+                        <div class="example">
+                            <strong>Example:</strong> Area under y = 2x from x=0 to x=3
+                            <br/>∫₀³ 2x dx = [x²]₀³ = 9
+                        </div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="30" y1="150" x2="280" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <line x1="30" y1="30" x2="30" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <line x1="30" y1="150" x2="180" y2="30" stroke="#0052cc" stroke-width="2.5"/>
+                                <polygon points="30,150 180,30 180,150" fill="#0052cc" opacity="0.2"/>
+                                <line x1="180" y1="30" x2="180" y2="150" stroke="#4CAF50" stroke-width="1.5" stroke-dasharray="4,4"/>
+                                <text x="270" y="165" font-size="12" fill="currentColor">x</text>
+                                <text x="15" y="35" font-size="12" fill="currentColor">y</text>
+                                <text x="110" y="170" font-size="11" fill="#4CAF50">Area = 9</text>
+                                <text x="190" y="170" font-size="10" fill="currentColor">x=3</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🔗 Fundamental Theorem</div>
+                        <div class="card-content">
+                            The Fundamental Theorem of Calculus connects derivatives and integrals, showing they are inverse operations.
+                        </div>
+                        <div class="formula">∫ₐᵇ f'(x) dx = f(b) - f(a)</div>
+                        <div class="card-content">
+                            <strong>Significance:</strong> This theorem is the bridge between differential and integral calculus, enabling us to compute definite integrals using antiderivatives.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALGEBRA TAB -->
+            <div class="tab-content" id="algebra">
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-title">🔤 Algebra Overview</div>
+                        <div class="card-content">
+                            <strong>Definition:</strong> Algebra studies mathematical symbols and rules for manipulating them to solve equations and model relationships between variables.
+                        </div>
+                        <div class="card-content">
+                            Algebra forms the foundation for all higher mathematics and is essential in science, engineering, finance, and computer science.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📈 Linear Equations</div>
+                        <div class="card-content">
+                            Linear equations describe proportional relationships and straight-line functions.
+                        </div>
+                        <div class="formula">y = mx + b</div>
+                        <div class="example">
+                            <strong>Example:</strong> Solve 2x + 3 = 7
+                            <br/>2x = 4 → x = 2
+                        </div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="30" y1="150" x2="280" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <line x1="30" y1="30" x2="30" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <line x1="30" y1="130" x2="280" y2="130" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                                <line x1="30" y1="110" x2="280" y2="110" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                                <line x1="50" y1="30" x2="50" y2="150" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                                <line x1="100" y1="30" x2="100" y2="150" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                                <line x1="30" y1="141" x2="180" y2="31" stroke="#0052cc" stroke-width="2.5"/>
+                                <circle cx="30" cy="141" r="3" fill="#ff6b6b"/>
+                                <text x="270" y="165" font-size="12" fill="currentColor">x</text>
+                                <text x="15" y="35" font-size="12" fill="currentColor">y</text>
+                                <text x="35" y="160" font-size="10" fill="currentColor">b=1</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🎯 Quadratic Equations</div>
+                        <div class="card-content">
+                            Quadratic equations have the form ax² + bx + c = 0 and create parabolic graphs.
+                        </div>
+                        <div class="example">
+                            <strong>Example:</strong> Solve x² - 4 = 0
+                            <br/>x² = 4 → x = ±2
+                        </div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="30" y1="100" x2="280" y2="100" stroke="currentColor" stroke-width="2"/>
+                                <line x1="150" y1="30" x2="150" y2="170" stroke="currentColor" stroke-width="2"/>
+                                <path d="M 40 165 Q 100 40 150 10 Q 200 40 260 165" stroke="#0052cc" stroke-width="2.5" fill="none"/>
+                                <circle cx="95" cy="100" r="3" fill="#4CAF50"/>
+                                <circle cx="205" cy="100" r="3" fill="#4CAF50"/>
+                                <text x="275" y="115" font-size="12" fill="currentColor">x</text>
+                                <text x="135" y="25" font-size="12" fill="currentColor">y</text>
+                                <text x="90" y="115" font-size="10" fill="#4CAF50">-2</text>
+                                <text x="200" y="115" font-size="10" fill="#4CAF50">2</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🧩 Polynomials & Factoring</div>
+                        <div class="card-content">
+                            Polynomial factoring simplifies complex expressions and finds roots of equations.
+                        </div>
+                        <div class="example">
+                            <strong>Example:</strong> Factor x² + 5x + 6
+                            <br/>(x + 2)(x + 3) = x² + 5x + 6
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🔗 Functions & Graphs</div>
+                        <div class="card-content">
+                            Functions map inputs to outputs. Graphs visualize these relationships and reveal function properties.
+                        </div>
+                        <div class="example">
+                            <strong>Definition:</strong> For each input x, there is exactly one output f(x)
+                            <br/><strong>Key Properties:</strong> Domain, Range, Continuity, Symmetry
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">⚖️ Systems of Equations</div>
+                        <div class="card-content">
+                            Solve multiple equations simultaneously to find values that satisfy all equations.
+                        </div>
+                        <div class="example">
+                            <strong>Example:</strong><br/>x + y = 5<br/>x - y = 1<br/><strong>Solution:</strong> x = 3, y = 2
+                        </div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="30" y1="150" x2="280" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <line x1="30" y1="30" x2="30" y2="150" stroke="currentColor" stroke-width="2"/>
+                                <line x1="30" y1="120" x2="180" y2="30" stroke="#0052cc" stroke-width="2.5"/>
+                                <line x1="60" y1="150" x2="210" y2="30" stroke="#ff6b6b" stroke-width="2.5"/>
+                                <circle cx="120" cy="90" r="4" fill="#4CAF50"/>
+                                <text x="270" y="165" font-size="12" fill="currentColor">x</text>
+                                <text x="15" y="35" font-size="12" fill="currentColor">y</text>
+                                <text x="125" y="105" font-size="11" fill="#4CAF50">(3,2)</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GEOMETRY TAB -->
+            <div class="tab-content" id="geometry">
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-title">🏗️ Geometry Overview</div>
+                        <div class="card-content">
+                            <strong>Definition:</strong> Geometry studies shapes, sizes, and spatial relationships. It bridges algebraic concepts with visual, spatial understanding.
+                        </div>
+                        <div class="card-content">
+                            <strong>Key Areas:</strong> Points & Lines, Triangles, Circles, Polygons, Surface Area & Volume
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📍 Angles & Triangles</div>
+                        <div class="card-content">
+                            Triangles are fundamental geometric shapes with important angle and side relationships.
+                        </div>
+                        <div class="example">
+                            <strong>Triangle Angle Sum:</strong> Sum of angles = 180°
+                        </div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="150,30 50,160 250,160" fill="#0052cc" opacity="0.2" stroke="#0052cc" stroke-width="2.5"/>
+                                <circle cx="150" cy="30" r="15" fill="none" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="3,3"/>
+                                <text x="145" y="50" font-size="12" fill="currentColor">A</text>
+                                <text x="30" y="170" font-size="12" fill="currentColor">B</text>
+                                <text x="260" y="170" font-size="12" fill="currentColor">C</text>
+                                <text x="150" y="125" font-size="11" fill="#0052cc" text-anchor="middle">A+B+C=180°</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📐 Pythagorean Theorem</div>
+                        <div class="card-content">
+                            In a right triangle, the square of the hypotenuse equals the sum of squares of the other two sides.
+                        </div>
+                        <div class="formula">a² + b² = c²</div>
+                        <div class="example">
+                            <strong>Example:</strong> Right triangle with legs a=3, b=4
+                            <br/>c² = 3² + 4² = 9 + 16 = 25 → c = 5
+                        </div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="50,150 50,50 180,150" fill="#0052cc" opacity="0.2" stroke="#0052cc" stroke-width="2.5"/>
+                                <rect x="50" y="135" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <text x="35" y="105" font-size="13" font-weight="bold" fill="#ff6b6b">a=3</text>
+                                <text x="110" y="165" font-size="13" font-weight="bold" fill="#ff6b6b">b=4</text>
+                                <text x="105" y="95" font-size="13" font-weight="bold" fill="#4CAF50">c=5</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">⭕ Circles</div>
+                        <div class="card-content">
+                            Circles are sets of points equidistant from a center. Key formulas relate radius to area and circumference.
+                        </div>
+                        <div class="formula">Area = πr²<br/>Circumference = 2πr</div>
+                        <div class="svg-container">
+                            <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="150" cy="100" r="70" fill="#0052cc" opacity="0.2" stroke="#0052cc" stroke-width="2.5"/>
+                                <line x1="150" y1="100" x2="220" y2="100" stroke="#ff6b6b" stroke-width="2"/>
+                                <circle cx="150" cy="100" r="3" fill="currentColor"/>
+                                <text x="180" y="105" font-size="13" font-weight="bold" fill="#ff6b6b">r</text>
+                                <text x="145" y="90" font-size="12" fill="currentColor">O</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">📦 Volume & Surface Area</div>
+                        <div class="card-content">
+                            Calculate 3D properties of common solids like cubes, cylinders, and spheres.
+                        </div>
+                        <div class="example">
+                            <strong>Sphere:</strong> V = (4/3)πr³, SA = 4πr²
+                            <br/><strong>Cylinder:</strong> V = πr²h, SA = 2πr² + 2πrh
+                            <br/><strong>Cube:</strong> V = s³, SA = 6s²
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🌍 Real-World Applications</div>
+                        <div class="card-content">
+                            Geometry applications span architecture, engineering, construction, and design.
+                        </div>
+                        <div class="example">
+                            <strong>Architecture:</strong> Designing buildings with geometric precision
+                            <br/><strong>Engineering:</strong> Calculating material quantities and structural integrity
+                            <br/><strong>Construction:</strong> Layout and measurements for projects
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABOUT TAB -->
+            <div class="tab-content" id="about">
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-title">👥 About Mathematics Library</div>
+                        <div class="card-content">
+                            Mathematics Library is an educational platform designed to make mathematics accessible and engaging for learners of all levels.
+                        </div>
+                        <div class="card-content">
+                            We believe that understanding mathematical concepts deeply—through clear explanations, visual aids, and practical examples—is key to success in STEM fields and beyond.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🎓 Our Mission</div>
+                        <div class="card-content">
+                            To provide comprehensive, easy-to-understand educational resources that bridge the gap between abstract mathematical theory and real-world applications.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🚀 Why Choose Mathematics Library?</div>
+                        <div class="card-content">
+                            ✓ Clear, structured lessons
+                            <br/>✓ Comprehensive formulas and examples
+                            <br/>✓ Visual diagrams and illustrations
+                            <br/>✓ Real-world applications
+                            <br/>✓ Clean, distraction-free interface
+                            <br/>✓ Dark mode support
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">👨‍💻 Creators</div>
+                        <div class="card-content">
+                            <strong>Created by:</strong>
+                            <br/>🔹 Ciara Christille Bagayan
+                            <br/>🔹 Maryshe Genetiano
+                            <br/>🔹 Nathaniel Ceralde
+                        </div>
+                        <div class="card-content">
+                            Dedicated to making mathematics education accessible and inspiring to everyone.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">💡 How to Use</div>
+                        <div class="card-content">
+                            1. Select a topic (Calculus, Algebra, or Geometry)
+                            <br/>2. Read the clear definitions and explanations
+                            <br/>3. Study the formulas and examples
+                            <br/>4. Examine the visual diagrams
+                            <br/>5. Apply concepts to real-world problems
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">🌙 Dark Mode</div>
+                        <div class="card-content">
+                            Click the moon icon in the header to toggle between light and dark themes. Perfect for studying at any time of day with reduced eye strain.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            Created by <strong>Ciara Christille Bagayan</strong> | <strong>Maryshe Genetiano</strong> | <strong>Nathaniel Ceralde</strong>
+            <br/>
+            © 2026 Mathematics Library. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        // Tab Navigation
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                const tabName = button.getAttribute('data-tab');
+                document.getElementById(tabName).classList.add('active');
+                
+                // Scroll to top of main content
+                document.querySelector('main').scrollTop = 0;
+            });
+        });
+
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-theme', savedTheme);
+        updateThemeToggle(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggle(newTheme);
+        });
+
+        function updateThemeToggle(theme) {
+            themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+            themeToggle.title = theme === 'light' ? 'Toggle Dark Mode' : 'Toggle Light Mode';
+        }
+    </script>
+</body>
+</html>
